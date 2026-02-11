@@ -1,0 +1,1207 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>すろらぼ｜スロット期待値ツール使い放題</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Noto Sans JP', -apple-system, 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+  background: #f7f8fc;
+  color: #1a1a2e;
+  line-height: 1.8;
+  overflow-x: hidden;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { text-decoration: none; color: inherit; }
+
+/* ========== CSS VARIABLES ========== */
+:root {
+  --primary: #09BDBE;
+  --primary-dark: #089a9b;
+  --primary-light: #e6f9f9;
+  --primary-glow: rgba(9, 189, 190, 0.15);
+  --accent-purple-from: #667eea;
+  --accent-purple-to: #764ba2;
+  --cta-orange: #f99201;
+  --cta-orange-dark: #e08500;
+  --cta-orange-glow: rgba(249, 146, 1, 0.35);
+  --bg-white: #ffffff;
+  --bg-light: #f7f8fc;
+  --bg-section: #f0f2f8;
+  --bg-card: #ffffff;
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a68;
+  --text-muted: #8888a0;
+  --border-light: rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+  --shadow-primary: 0 8px 25px rgba(9, 189, 190, 0.3);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========== PAGE WRAPPER ========== */
+#introduction {
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+}
+#introduction > div {
+  overflow: auto;
+}
+
+/* ========== SITE HEADER ========== */
+.site-header {
+  background: var(--bg-white);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.92);
+}
+.site-header .logo-img {
+  height: 36px;
+  width: auto;
+  display: inline-block;
+}
+
+/* ========== HERO SECTION ========== */
+.hero-section {
+  position: relative;
+  background: var(--bg-white);
+}
+.hero-section > img {
+  width: 100%;
+  display: block;
+}
+
+/* ========== PRICE + CTA BLOCK ========== */
+.cta-block {
+  background: var(--bg-white);
+  padding: 28px 20px 32px;
+  text-align: center;
+}
+.price {
+  font-size: 15px;
+  color: var(--text-secondary);
+  padding: 0 0 8px;
+  font-weight: 500;
+}
+.price .big {
+  font-size: 2.2em;
+  font-weight: 900;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.cta-sub-text {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+}
+
+/* ========== REGISTRATION CTA BUTTON ========== */
+.regist-button {
+  background: linear-gradient(135deg, var(--cta-orange), var(--cta-orange-dark));
+  height: 56px;
+  border-radius: var(--radius-xl);
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 300px;
+  max-width: 90%;
+  box-shadow: var(--cta-orange-glow);
+  transition: all var(--transition);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.05em;
+}
+.regist-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(249, 146, 1, 0.5);
+}
+.regist-button:active {
+  transform: translateY(0);
+}
+.regist-button::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+  animation: buttonShimmer 3s ease-in-out infinite;
+}
+@keyframes buttonShimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ========== SECTION DIVIDER ========== */
+.bg-gray {
+  min-height: 32px;
+  background: var(--bg-section);
+}
+
+/* ========== SECTION HEADER (header2) ========== */
+.header2 {
+  position: relative;
+  background: linear-gradient(135deg, var(--accent-purple-from) 0%, var(--accent-purple-to) 100%);
+  color: white;
+  padding: 20px 24px;
+  text-align: center;
+  font-size: 1.6em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  overflow: hidden;
+}
+.header2::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ========== WHITE CONTENT SECTIONS ========== */
+.bg-white {
+  background-color: var(--bg-white);
+  margin: 0;
+  padding: 2px;
+}
+
+/* ========== MAIN SECTION (surolabotoha) ========== */
+.main-section {
+  padding: 32px 20px;
+}
+.main-section > p,
+.main-section > div {
+  text-align: left;
+  justify-content: start;
+}
+.main-section p {
+  padding: 8px 10px 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.9;
+}
+.motto {
+  font-size: 1.4em;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: 0.02em;
+}
+.intro-image {
+  margin: 20px auto;
+  border-radius: var(--radius-md);
+}
+
+/* ========== ICON (logo in CTA blocks) ========== */
+.icon {
+  width: 120px;
+  margin: 0 auto 8px;
+}
+
+/* ========== FEATURE SUBSECTIONS ========== */
+.bg-gray section {
+  margin: 0;
+  padding: 36px 20px;
+}
+#introduction h2 {
+  background-color: transparent;
+  border-left: none;
+  color: var(--primary);
+  font-size: 1.4em;
+  font-weight: 800;
+  -webkit-text-stroke: 0;
+  padding: 8px 0;
+  margin: 0 0 16px;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+#introduction .advantage {
+  margin: 0 0 12px;
+  border-radius: var(--radius-sm);
+}
+.sample {
+  width: 280px;
+  max-width: 90%;
+  margin: 16px auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+}
+#introduction section > p {
+  margin: 5px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+#introduction section > figure {
+  padding: 8px 16px;
+}
+
+/* ========== TEXT IMAGES (content delivered as images) ========== */
+.text {
+  display: block;
+  margin: 8px auto;
+}
+
+/* ========== FLOW SECTION ========== */
+#flow {
+  padding: 24px 16px;
+  text-align: center;
+}
+#flow > img {
+  border-radius: var(--radius-md);
+  margin: 0 auto 16px;
+}
+#flow p {
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+#flow p:first-of-type {
+  font-weight: 700;
+  font-size: 1.1em;
+  color: var(--primary);
+  margin-top: 24px;
+  background: var(--primary-light);
+  border-left: 4px solid var(--primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  box-shadow: 0 2px 8px var(--primary-glow);
+  padding: 12px 16px;
+  text-align: left;
+}
+#flow figure {
+  padding: 8px 0;
+}
+#flow small {
+  color: var(--text-muted);
+  line-height: 1.6;
+  display: block;
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+/* ========== SURVEY/TRACK RECORD IMAGE ========== */
+.survey-image {
+  border-radius: var(--radius-md);
+  margin: 0 auto;
+}
+
+/* ========== TESTIMONIALS ========== */
+.testimonials {
+  padding: 28px 16px;
+  background: transparent;
+}
+.testimonial-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  position: relative;
+  background: var(--bg-white);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: box-shadow var(--transition);
+}
+.testimonial-item:hover {
+  box-shadow: var(--shadow-md);
+}
+.testimonial-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--bg-white);
+  object-fit: cover;
+}
+.testimonial-item:last-child {
+  margin-bottom: 0;
+}
+.testimonial-item > figure {
+  text-align: left;
+  flex: 1;
+}
+.testimonials > figure {
+  margin-top: 20px;
+  padding: 0 16px;
+}
+.testimonials-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 16px;
+  padding: 8px;
+  font-style: italic;
+}
+
+/* ========== FINAL APPEAL / OUR VISION ========== */
+.final-appeal {
+  padding: 32px 20px;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.8;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.final-appeal img {
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+}
+.final-appeal ul {
+  padding-left: 0;
+  text-align: left;
+}
+
+#introduction .appeal-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: white !important;
+  text-align: center;
+  margin: 0 0 24px;
+  padding: 28px 24px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-primary);
+  line-height: 1.3;
+  border: none;
+  letter-spacing: 0.04em;
+}
+
+/* ========== FAQ SECTION ========== */
+.faq-container {
+  padding: 28px 16px;
+}
+.faq-item2 {
+  margin-bottom: 20px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+  transition: box-shadow var(--transition);
+}
+.faq-item2:hover {
+  box-shadow: var(--shadow-md);
+}
+.faq-item2:last-child {
+  margin-bottom: 0;
+}
+.question2 {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+}
+.question-icon {
+  width: 30px;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+.question-text {
+  flex: 1;
+}
+.question-text > figure,
+.answer-text > figure {
+  display: flex;
+  align-items: center;
+}
+.answer2 {
+  background-color: #fafbfc;
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+}
+.answer-icon {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  margin-right: 14px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.answer-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+/* ========== VIDEO CONTAINER ========== */
+.video-container {
+  margin: 12px auto;
+  max-width: 100%;
+}
+.answer-text .video-container .video {
+  margin-top: 8px;
+}
+
+/* ========== SERVICE DETAIL ========== */
+.service-detail-container {
+  padding: 16px 20px;
+}
+
+/* ========== STEPS / FLOW (if steps-container pattern is used) ========== */
+.steps-container {
+  padding: 32px 20px;
+}
+.step {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  position: relative;
+}
+.step:last-child { margin-bottom: 0; }
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 37px;
+  top: 75px;
+  width: 2px;
+  height: 32px;
+  background: linear-gradient(to bottom, var(--primary), transparent);
+  border-radius: 1px;
+}
+.step-number {
+  flex-shrink: 0;
+  width: 75px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  margin-right: 20px;
+  box-shadow: var(--shadow-primary);
+  position: relative;
+  z-index: 2;
+  display: flex;
+}
+.step-number .step-label {
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 1px;
+  opacity: 0.9;
+}
+.step-number .step-num {
+  font-size: 20px;
+  font-weight: 900;
+}
+.step-content { flex: 1; }
+.step-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.step-description {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ========== TABLE (if used) ========== */
+#introduction table {
+  width: 95%;
+  margin: 8px auto;
+  border-collapse: collapse;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+#introduction caption {
+  background: linear-gradient(135deg, var(--text-primary), #2d2d4a);
+  color: white;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 1.1em;
+}
+#introduction th,
+#introduction td {
+  border: 1px solid var(--border-light);
+  padding: 12px;
+}
+#introduction th {
+  background-color: #f8f9fa;
+  width: 30%;
+  font-weight: 600;
+}
+
+/* ========== FLOATING HAMBURGER NAV ========== */
+#landingHamburger {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  color: white;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 50%;
+  z-index: 999;
+  padding: 0 8px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#landingHamburger ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 6px 8px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+#landingHamburger ul li {
+  border-bottom: none;
+  width: 60px;
+  height: 56px;
+  margin: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  background-color: transparent;
+  color: var(--text-primary);
+  justify-content: center;
+  display: flex;
+  position: relative;
+  cursor: pointer;
+  transition: background-color var(--transition);
+  font-weight: 500;
+  font-size: 105%;
+}
+#landingHamburger ul li:hover {
+  background-color: var(--primary-light);
+}
+#landingHamburger ul li > div > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#landingHamburger form {
+  width: 80%;
+  margin: 0 1px;
+  box-shadow: none;
+}
+#landingHamburger figure {
+  padding: 8px 8px 0;
+}
+#landingHamburger figure.big-icon {
+  width: 40px;
+  height: 40px;
+  padding: 2px;
+}
+#landingHamburger figure img {
+  height: 26px;
+}
+#landingHamburger .related figure {
+  background-color: var(--accent-purple-from);
+  border-radius: 50%;
+}
+#landingHamburger .related > figure.big-icon {
+  width: 36px;
+  height: 36px;
+}
+#landingHamburger .big-icon img {
+  width: 100%;
+}
+
+.hamburger-regist-button {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--cta-orange), var(--cta-orange-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: white;
+  font-size: 200%;
+  font-weight: 700;
+  box-shadow: 0 3px 12px var(--cta-orange-glow);
+}
+
+#landingHamburger li.not-use::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: linear-gradient(135deg, transparent 47%, #e0e0e0 47%, #e0e0e0 53%, transparent 53%);
+  z-index: 1;
+  border-radius: var(--radius-sm);
+}
+
+/* ========== SCROLL REVEAL ANIMATION ========== */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== IMAGE-TEXT LAYOUT ========== */
+.image-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========== CAMPAIGN / PAYPAL ========== */
+.campaign {
+  margin: 16px 16px 32px;
+  text-align: left;
+}
+.paypal { margin: 20px; }
+.float-left { float: left; }
+.float-right { float: right; }
+
+/* ========== FOOTER ========== */
+.site-footer {
+  background: var(--text-primary);
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  padding: 24px 20px;
+  font-size: 12px;
+}
+
+/* ========== RESPONSIVE (Mobile) ========== */
+@media (max-width: 600px) {
+  .header2 {
+    padding: 16px 16px;
+    font-size: 1.3em;
+  }
+  .faq-container {
+    padding: 16px 10px;
+  }
+  .question2 {
+    padding: 14px;
+  }
+  .answer2 {
+    padding: 14px;
+  }
+  .question-icon,
+  .answer-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 12px;
+    margin-right: 10px;
+  }
+  .question-text {
+    font-size: 14px;
+  }
+  .answer-text {
+    font-size: 13px;
+  }
+  .steps-container {
+    padding: 16px 10px;
+  }
+  .step {
+    margin-bottom: 16px;
+  }
+  .step-number {
+    width: 60px;
+    height: 60px;
+    margin-right: 8px;
+  }
+  .step-number .step-num {
+    font-size: 18px;
+  }
+  .step-content {
+    height: auto;
+    min-height: 60px;
+  }
+  .step-title {
+    font-size: 15px;
+  }
+  .step-description {
+    font-size: 13px;
+  }
+  .testimonials {
+    padding: 16px 8px;
+  }
+  .testimonial-item {
+    padding: 12px;
+  }
+  .final-appeal {
+    padding: 16px;
+  }
+  #introduction .appeal-title {
+    font-size: 20px;
+    padding: 20px;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+  }
+  .cta-block {
+    padding: 20px 16px 24px;
+  }
+  .price .big {
+    font-size: 1.8em;
+  }
+  .main-section {
+    padding: 24px 16px;
+  }
+  .bg-gray section {
+    padding: 24px 16px;
+  }
+  #introduction h2 {
+    font-size: 1.2em;
+  }
+  .sample {
+    width: 260px;
+  }
+}
+
+/* ========== RESPONSIVE (Tablet+) ========== */
+@media (min-width: 601px) {
+  #introduction {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  .site-header {
+    max-width: 640px;
+    margin: 0 auto;
+    border-radius: 0;
+  }
+}
+
+/* ========== HIDE ELEMENTS ========== */
+#go-to-top { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ====== SITE HEADER ====== -->
+<div class="site-header">
+  <a href="https://slolaboratory.com/top">
+    <img src="https://media.slolaboratory.com/wp-content/uploads/2025/05/s-rogo.jpg" alt="すろらぼ" class="logo-img">
+  </a>
+</div>
+
+<!-- ====== MAIN LP CONTENT ====== -->
+<div id="introduction">
+
+  <!-- ====== HERO ====== -->
+  <div class="hero-section">
+    <img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top60-2.jpg" alt="すろらぼ キャッチコピー">
+  </div>
+
+  <!-- ====== CTA BLOCK 1 ====== -->
+  <div class="cta-block bg-white">
+    <p class="price">有料会員 <span class="big">1,980円</span>/月</p>
+    <div class="cta-sub-text">＼ いますぐ登録で全ツール使い放題！！ ／</div>
+    <div class="regist-button" onclick="location.href='https://slolaboratory.com/membership-join/membership-registration/' + window.location.search">登録はこちら</div>
+  </div>
+
+  <!-- ====== SECTION: すろらぼとは ====== -->
+  <div class="bg-gray"></div>
+  <p class="header2" id="destination1">すろらぼとは</p>
+  <div class="bg-white main-section">
+    <p><span class="motto">速い！見やすい！使いやすい！</span><br>がモットーのスロット攻略情報サイト</p>
+    <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/top20.png" class="intro-image" alt="すろらぼ紹介">
+    <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top31-3.png" class="text" alt="説明テキスト"></figure>
+  </div>
+
+  <!-- ====== FEATURE SUBSECTIONS ====== -->
+  <div class="bg-gray">
+    <section>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/top12.png" class="advantage" alt="アドバンテージ">
+      <h2>サイト全体</h2>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top-screenshot12-portrait.png" class="sample" alt="トップページ スクリーンショット">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top32-3.png" class="text" data-group="1" alt="説明テキスト"></figure>
+    </section>
+    <section>
+      <h2>ハイエナ</h2>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/top-screenshot11-portrait.png" class="sample" alt="期待値テーブル スクリーンショット">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top33-3.png" class="text" data-group="1" alt="説明テキスト"></figure>
+    </section>
+    <section>
+      <h2>設定狙い</h2>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top-screenshot1-portrait.png" class="sample" alt="設定狙い スクリーンショット">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top34-3.png" class="text" data-group="1" alt="説明テキスト"></figure>
+    </section>
+  </div>
+  <div class="bg-gray">
+    <section>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/top24.png" class="advantage" alt="アドバンテージ">
+      <h2>設定解析</h2>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/top-screenshot2-portrait.png" class="sample" alt="設定解析 スクリーンショット">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top35-3.png" class="text" data-group="1" alt="説明テキスト"></figure>
+    </section>
+    <section>
+      <h2>狙い目</h2>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/top-screenshot3-portrait.png" class="sample" alt="狙い目 スクリーンショット">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top36-3.png" class="text" data-group="1" alt="説明テキスト"></figure>
+    </section>
+    <section>
+      <h2>設定解析</h2>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/top-screenshot4-portrait.png" class="sample" alt="設定解析 スクリーンショット">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top37-3.png" class="text" data-group="1" alt="説明テキスト"></figure>
+    </section>
+  </div>
+  <div class="bg-gray">
+    <section>
+      <h2>コラム</h2>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/05/top-screenshot6-portrait.png" class="sample" alt="コラム スクリーンショット">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top38-3.png" class="text" data-group="1" alt="説明テキスト"></figure>
+    </section>
+    <section>
+      <h2>コラム</h2>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/top-screenshot5-portrait.png" class="sample" alt="コラム スクリーンショット">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top39-3.png" class="text" data-group="1" alt="説明テキスト"></figure>
+    </section>
+    <section>
+      <h2>ツール</h2>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/05/top-screenshot9-portrait.png" class="sample" alt="ツール スクリーンショット">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top40-3.png" class="text" data-group="1" alt="説明テキスト"></figure>
+    </section>
+  </div>
+
+  <!-- ====== MID CTA BLOCK ====== -->
+  <div class="cta-block bg-white">
+    <img src="https://media.slolaboratory.com/wp-content/uploads/2025/05/s-rogo.jpg" alt="すろらぼ" class="icon">
+    <p class="price">有料会員 <span class="big">1,980円</span>/月</p>
+    <div class="cta-sub-text">＼ いますぐ登録で全ツール使い放題！！ ／</div>
+    <div class="regist-button" onclick="location.href='https://slolaboratory.com/membership-join/membership-registration/' + window.location.search">登録はこちら</div>
+  </div>
+
+  <!-- ====== SECTION: ご利用開始までの流れ ====== -->
+  <div class="bg-gray"></div>
+  <p class="header2" id="destination2">ご利用開始までの流れ</p>
+  <div class="bg-white">
+    <div id="flow">
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/top13.jpg" alt="登録までの流れ">
+      <p>ご入会後の決済の流れ</p>
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top42-2.png" class="text" alt="決済の流れ"></figure>
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top14-2.png" alt="入会後の決済の流れ">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top43-2.png" class="text" alt="決済説明"></figure>
+    </div>
+  </div>
+
+  <!-- ====== SECTION: サービスの実績 ====== -->
+  <div class="bg-gray"></div>
+  <p class="header2">サービスの実績</p>
+  <div class="bg-white" style="padding: 16px;">
+    <img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top28.jpg" alt="サービスの実績" class="survey-image">
+  </div>
+
+  <!-- ====== SECTION: お客様の声 ====== -->
+  <div class="bg-gray"></div>
+  <p class="header2">お客様の声</p>
+  <div class="bg-white" data-group="2">
+    <div class="testimonials">
+      <div class="testimonial-item">
+        <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/若者の無料イラスト.png" alt="ユーザー" class="testimonial-avatar">
+        <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top44-2.png" class="text" data-group="2" alt="お客様の声1"></figure>
+      </div>
+      <div class="testimonial-item">
+        <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/サラリーマン.png" alt="ユーザー" class="testimonial-avatar">
+        <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top45-2.png" class="text" data-group="2" alt="お客様の声2"></figure>
+      </div>
+      <div class="testimonial-item">
+        <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/メガネをかけた男性のアイコン素材.png" alt="ユーザー" class="testimonial-avatar">
+        <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top46-2.png" class="text" data-group="2" alt="お客様の声3"></figure>
+      </div>
+      <div class="testimonial-item">
+        <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/OL風の人物アイコン.png" alt="ユーザー" class="testimonial-avatar">
+        <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top47-2.png" class="text" data-group="2" alt="お客様の声4"></figure>
+      </div>
+      <div class="testimonial-item">
+        <img src="https://media.slolaboratory.com/wp-content/uploads/2025/06/男子学生アイコン2.png" alt="ユーザー" class="testimonial-avatar">
+        <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top48-2.png" class="text" data-group="2" alt="お客様の声5"></figure>
+      </div>
+      <figure>
+        <img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top41-2.png" class="text" width="440px" alt="補足テキスト">
+      </figure>
+    </div>
+  </div>
+
+  <!-- ====== SECTION: 私たちの想い ====== -->
+  <div class="bg-gray"></div>
+  <p class="header2">私たちの想い</p>
+  <div class="bg-white">
+    <div class="final-appeal">
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top30.jpg" alt="私たちの想い">
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top18-2.png" alt="透明性のあるサービス">
+      <img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top19-3.png" alt="サポートへのコミットメント">
+    </div>
+  </div>
+
+  <!-- ====== SECTION: よくある質問 ====== -->
+  <div class="bg-gray"></div>
+  <p class="header2" id="destination3">よくある質問</p>
+  <div class="bg-white">
+    <div class="faq-container">
+      <div class="faq-item2">
+        <div class="question2">
+          <div class="question-icon">Q</div>
+          <div class="question-text"><figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top49-2.png" class="text" data-group="3" alt="質問1"></figure></div>
+        </div>
+        <div class="answer2">
+          <div class="answer-icon">A</div>
+          <div class="answer-text"><figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top50-2.png" class="text" data-group="3" alt="回答1"></figure></div>
+        </div>
+      </div>
+      <div class="faq-item2">
+        <div class="question2">
+          <div class="question-icon">Q</div>
+          <div class="question-text"><figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top51-2.png" class="text" data-group="3" alt="質問2"></figure></div>
+        </div>
+        <div class="answer2">
+          <div class="answer-icon">A</div>
+          <div class="answer-text"><figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top52-2.png" class="text" data-group="3" alt="回答2"></figure></div>
+        </div>
+      </div>
+      <div class="faq-item2">
+        <div class="question2">
+          <div class="question-icon">Q</div>
+          <div class="question-text"><figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top53-2.png" class="text" data-group="3" alt="質問3"></figure></div>
+        </div>
+        <div class="answer2">
+          <div class="answer-icon">A</div>
+          <div class="answer-text"><figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top54-2.png" class="text" data-group="3" alt="回答3"></figure></div>
+        </div>
+      </div>
+      <div class="faq-item2">
+        <div class="question2">
+          <div class="question-icon">Q</div>
+          <div class="question-text"><figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top55-2.png" class="text" data-group="3" alt="質問4"></figure></div>
+        </div>
+        <div class="answer2">
+          <div class="answer-icon">A</div>
+          <div class="answer-text"><figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top56-2.png" class="text" data-group="3" alt="回答4"></figure></div>
+        </div>
+      </div>
+      <div class="faq-item2">
+        <div class="question2">
+          <div class="question-icon">Q</div>
+          <div class="question-text"><figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top57-2.png" class="text" data-group="3" alt="質問5"></figure></div>
+        </div>
+        <div class="answer2">
+          <div class="answer-icon">A</div>
+          <div class="answer-text">
+            <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top58-2.png" class="text" data-group="3" alt="回答5"></figure>
+            <div class="video-container">
+              <iframe class="video" width="100%" height="200" src="https://www.youtube.com/embed/uSezUaDkBkQ" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="video-container">
+              <iframe class="video" width="100%" height="200" src="https://www.youtube.com/embed/ZneTgzYKYVY" frameborder="0" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION: サービス詳細 ====== -->
+  <div class="bg-gray"></div>
+  <p class="header2" id="destination4">サービス詳細</p>
+  <div class="bg-white">
+    <div class="service-detail-container">
+      <figure><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/top59-2.png" class="text" alt="サービス詳細"></figure>
+    </div>
+  </div>
+
+  <!-- ====== FINAL CTA BLOCK ====== -->
+  <div class="bg-gray"></div>
+  <div class="cta-block bg-white">
+    <img src="https://media.slolaboratory.com/wp-content/uploads/2025/05/s-rogo.jpg" alt="すろらぼ" class="icon">
+    <p class="price">有料会員 <span class="big">1,980円</span>/月</p>
+    <div class="cta-sub-text">＼ いますぐ登録で全ツール使い放題！！ ／</div>
+    <div class="regist-button" onclick="location.href='https://slolaboratory.com/membership-join/membership-registration/' + window.location.search">登録はこちら</div>
+  </div>
+
+  <!-- ====== FLOATING HAMBURGER NAV ====== -->
+  <div id="landingHamburger" class="draggable">
+    <div>
+      <div class="menu-content1">
+        <ul>
+          <li class="scroll-link1">
+            <div><div>
+              <figure class="big-icon"><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/簡素な証明契約アイコン.png" alt=""></figure>
+            </div></div>
+            すろらぼとは
+          </li>
+          <li class="scroll-link2">
+            <div><div>
+              <figure class="big-icon"><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/jinbutsu-senga-icon-plus.png" alt=""></figure>
+            </div></div>
+            開始までの流れ
+          </li>
+          <li class="scroll-link3">
+            <div><div>
+              <figure class="big-icon"><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/question-mark.png" alt=""></figure>
+            </div></div>
+            よくある質問
+          </li>
+          <li class="scroll-link4">
+            <div><div>
+              <figure class="big-icon"><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/円マークアイコン.png" alt=""></figure>
+            </div></div>
+            サービス詳細
+          </li>
+          <li onclick="location.href='https://slolaboratory.com/membership-join/membership-registration/' + window.location.search">
+            <div><div>
+              <div class="hamburger-regist-button">
+                <figure class="big-icon" style="padding:0;"><img src="https://media.slolaboratory.com/wp-content/uploads/2025/07/jinbutsu-senga-icon-plus.png" alt=""></figure>
+              </div>
+            </div></div>
+            登録
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden login link -->
+  <div style="display:none;">
+    <a href="https://slolaboratory.com/membership-login/" id="login">ログイン</a>
+  </div>
+
+</div>
+<!-- END #introduction -->
+
+<!-- ====== FOOTER ====== -->
+<div class="site-footer">
+  &copy; 2025 すろらぼ All Rights Reserved.
+</div>
+
+<!-- ====== SCRIPTS ====== -->
+<script>
+// Image group resize (proportional width adjustment)
+function resizeTextImagesInGroup(groupId) {
+  const $targetImages = $('[data-group="' + groupId + '"]');
+  let maxWidth = 0;
+  $targetImages.each(function() {
+    if (this.naturalWidth > maxWidth) {
+      maxWidth = this.naturalWidth;
+    }
+  });
+  $targetImages.each(function() {
+    const ratio = this.naturalWidth / maxWidth;
+    $(this).css('width', (ratio * 100) + '%');
+  });
+}
+
+$(window).on('load', function() {
+  resizeTextImagesInGroup('1');
+  resizeTextImagesInGroup('2');
+  resizeTextImagesInGroup('3');
+});
+
+$(function() {
+  resizeTextImagesInGroup('1');
+  resizeTextImagesInGroup('2');
+  resizeTextImagesInGroup('3');
+
+  // Hamburger scroll toggle
+  function toggleHamburgerMenu() {
+    var scrollTop = $(window).scrollTop();
+    if (scrollTop >= 650) {
+      if (!$('#landingHamburger').is(':visible')) {
+        $('#landingHamburger').css({
+          'display': 'flex',
+          'opacity': '0'
+        }).animate({opacity: 1}, 300);
+      }
+    } else {
+      $('#landingHamburger').fadeOut(300);
+    }
+  }
+  toggleHamburgerMenu();
+  $(window).scroll(toggleHamburgerMenu);
+
+  // Smooth scroll for hamburger nav links
+  $('.scroll-link1').on('click', function() {
+    $('html, body').animate({ scrollTop: $('#destination1').offset().top - 10 }, 500);
+  });
+  $('.scroll-link2').on('click', function() {
+    $('html, body').animate({ scrollTop: $('#destination2').offset().top - 10 }, 500);
+  });
+  $('.scroll-link3').on('click', function() {
+    $('html, body').animate({ scrollTop: $('#destination3').offset().top - 10 }, 500);
+  });
+  $('.scroll-link4').on('click', function() {
+    $('html, body').animate({ scrollTop: $('#destination4').offset().top - 10 }, 500);
+  });
+
+  // Scroll reveal animation
+  var revealElements = document.querySelectorAll('.faq-item2, .testimonial-item, .step, section');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal', 'visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    revealElements.forEach(function(el) {
+      el.classList.add('reveal');
+      observer.observe(el);
+    });
+  }
+});
+</script>
+</body>
+</html>
