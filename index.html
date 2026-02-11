@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>すろらぼ｜スロット期待値ツール使い放題</title>
+  <style>
+    /* ========== RESET & BASE ========== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; }
+
+    /* ========== UTILITY ========== */
+    .gold   { color: #ffd700; }
+    .red    { color: #ff3333; }
+    .yellow { color: #ffe14d; }
+    .big    { font-size: 1.6em; }
+    .huge   { font-size: 2.2em; }
+    .marker-yellow {
+      background: linear-gradient(transparent 60%, #ffd700 60%);
+      font-weight: 900;
+    }
+    .marker-red {
+      background: linear-gradient(transparent 60%, #ff3333 60%);
+      font-weight: 900;
+    }
+    .strike { text-decoration: line-through; color: #999; }
+    .blink {
+      animation: blink 1s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ========== GLOW / SPARKLE ========== */
+    .glow-gold {
+      text-shadow:
+        0 0 10px #ffd700,
+        0 0 20px #ffd700,
+        0 0 40px #ff8c00,
+        0 0 80px #ff8c00;
+    }
+    .glow-red {
+      text-shadow:
+        0 0 10px #ff3333,
+        0 0 20px #ff3333,
+        0 0 40px #ff0000;
+    }
+
+    /* ========== HEADER RIBBON ========== */
+    .top-ribbon {
+      background: linear-gradient(90deg, #ff0000, #ff4400, #ff0000);
+      text-align: center;
+      padding: 10px;
+      font-weight: 900;
+      font-size: 1.1em;
+      letter-spacing: 0.1em;
+      animation: ribbonPulse 2s ease-in-out infinite;
+    }
+    @keyframes ribbonPulse {
+      0%, 100% { background-color: #ff0000; }
+      50% { background-color: #cc0000; }
+    }
+
+    /* ========== HERO ========== */
+    .hero {
+      position: relative;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.15) 0%, transparent 60%),
+        linear-gradient(180deg, #1a0a00 0%, #0a0a0a 100%);
+      text-align: center;
+      padding: 60px 20px 80px;
+      border-bottom: 4px solid #ffd700;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffd700' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff0000, #cc0000);
+      color: #fff;
+      padding: 8px 30px;
+      font-size: 1.1em;
+      font-weight: 900;
+      border-radius: 50px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(255,0,0,0.5);
+      letter-spacing: 0.15em;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1.3;
+      margin-bottom: 20px;
+    }
+    .hero h1 .line-gold {
+      display: block;
+      background: linear-gradient(90deg, #ffd700, #ffec80, #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 15px rgba(255,215,0,0.5));
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: #ccc;
+      margin-bottom: 30px;
+    }
+    .hero-price-box {
+      display: inline-block;
+      background: linear-gradient(135deg, #1a1a00, #2a2a00);
+      border: 3px solid #ffd700;
+      border-radius: 16px;
+      padding: 24px 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 30px rgba(255,215,0,0.2);
+    }
+    .hero-price-box .label {
+      font-size: 1em;
+      color: #ccc;
+    }
+    .hero-price-box .price {
+      font-size: clamp(2.5rem, 7vw, 4rem);
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255,215,0,0.6);
+    }
+    .hero-price-box .price-note {
+      font-size: 0.9em;
+      color: #ffcc00;
+    }
+
+    /* ========== CTA BUTTON ========== */
+    .cta-btn {
+      display: inline-block;
+      background: linear-gradient(180deg, #ff4444, #cc0000);
+      color: #fff;
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 900;
+      padding: 20px 50px;
+      border: none;
+      border-radius: 60px;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      box-shadow:
+        0 4px 15px rgba(255,0,0,0.5),
+        0 0 40px rgba(255,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: ctaPulse 2s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transform: skewX(-20deg);
+      animation: shine 3s ease-in-out infinite;
+    }
+    @keyframes shine {
+      0% { left: -60%; }
+      100% { left: 120%; }
+    }
+    @keyframes ctaPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .cta-btn:hover {
+      transform: scale(1.08);
+      box-shadow:
+        0 6px 25px rgba(255,0,0,0.7),
+        0 0 60px rgba(255,0,0,0.5);
+    }
+    .cta-sub {
+      display: block;
+      font-size: 0.7em;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    /* ========== SECTION COMMON ========== */
+    section {
+      padding: 60px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+      font-weight: 900;
+      margin-bottom: 40px;
+      position: relative;
+      padding-bottom: 20px;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #ffd700, transparent);
+    }
+
+    /* ========== SEPARATOR ========== */
+    .separator {
+      height: 6px;
+      background: linear-gradient(90deg, #0a0a0a, #ffd700, #0a0a0a);
+      margin: 0;
+    }
+
+    /* ========== PAIN SECTION ========== */
+    .pain-section {
+      background: linear-gradient(180deg, #0a0a0a, #1a0505);
+    }
+    .pain-list {
+      list-style: none;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .pain-list li {
+      font-size: 1.15em;
+      padding: 14px 20px;
+      margin-bottom: 12px;
+      border-left: 5px solid #ff3333;
+      background: rgba(255,0,0,0.05);
+      border-radius: 0 8px 8px 0;
+    }
+    .pain-list li::before {
+      content: '✕ ';
+      color: #ff3333;
+      font-weight: 900;
+    }
+
+    /* ========== SOLUTION ARROW ========== */
+    .arrow-section {
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 2.5em;
+      background: linear-gradient(180deg, #1a0505, #0a0a00);
+    }
+    .arrow-section .arrow {
+      display: inline-block;
+      color: #ffd700;
+      animation: arrowBounce 1s ease-in-out infinite;
+    }
+    @keyframes arrowBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+    .arrow-section p {
+      font-size: 0.5em;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255,215,0,0.4);
+    }
+
+    /* ========== FEATURES ========== */
+    .features-section {
+      background: linear-gradient(180deg, #0a0a00, #0a0a0a);
+    }
+    .feature-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    @media (min-width: 640px) {
+      .feature-cards { grid-template-columns: 1fr 1fr; }
+    }
+    .feature-card {
+      background: linear-gradient(135deg, #1a1a00, #111);
+      border: 2px solid #ffd700;
+      border-radius: 16px;
+      padding: 30px 24px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(255,215,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 40px rgba(255,215,0,0.25);
+    }
+    .feature-card .icon {
+      font-size: 2.5em;
+      margin-bottom: 12px;
+    }
+    .feature-card h3 {
+      font-size: 1.3em;
+      color: #ffd700;
+      margin-bottom: 10px;
+    }
+    .feature-card p {
+      font-size: 0.95em;
+      color: #ccc;
+      line-height: 1.7;
+    }
+
+    /* ========== NUMBERS ========== */
+    .numbers-section {
+      background: linear-gradient(180deg, #0a0a0a, #0d0d1a);
+      text-align: center;
+    }
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+    .number-item .num {
+      font-size: clamp(2.5rem, 6vw, 3.5rem);
+      font-weight: 900;
+      background: linear-gradient(180deg, #ffd700, #ff8c00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .number-item .num-label {
+      font-size: 1em;
+      color: #aaa;
+      margin-top: 4px;
+    }
+
+    /* ========== TESTIMONIALS ========== */
+    .testimonials-section {
+      background: linear-gradient(180deg, #0d0d1a, #0a0a0a);
+    }
+    .testimonial {
+      background: linear-gradient(135deg, #111, #1a1a1a);
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .testimonial::before {
+      content: '"';
+      position: absolute;
+      top: 10px;
+      left: 16px;
+      font-size: 4em;
+      color: #ffd700;
+      opacity: 0.2;
+      font-family: serif;
+    }
+    .testimonial .t-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .testimonial .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffd700, #ff8c00);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.2em;
+      color: #000;
+    }
+    .testimonial .t-name {
+      font-weight: 700;
+      font-size: 1em;
+    }
+    .testimonial .t-tag {
+      font-size: 0.85em;
+      color: #ffd700;
+    }
+    .testimonial .t-body {
+      font-size: 1em;
+      color: #ddd;
+      line-height: 1.8;
+    }
+    .testimonial .t-result {
+      margin-top: 12px;
+      padding: 10px 16px;
+      background: rgba(255,215,0,0.08);
+      border-left: 4px solid #ffd700;
+      border-radius: 0 8px 8px 0;
+      font-weight: 700;
+      color: #ffd700;
+      font-size: 1.1em;
+    }
+    .stars {
+      color: #ffd700;
+      letter-spacing: 2px;
+    }
+
+    /* ========== PRICING ========== */
+    .pricing-section {
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(255,215,0,0.08) 0%, transparent 60%),
+        linear-gradient(180deg, #0a0a0a, #1a1a00, #0a0a0a);
+      text-align: center;
+    }
+    .pricing-box {
+      background: linear-gradient(135deg, #1a1500, #0d0d00);
+      border: 3px solid #ffd700;
+      border-radius: 20px;
+      padding: 40px 30px;
+      max-width: 550px;
+      margin: 0 auto 30px;
+      box-shadow:
+        0 0 40px rgba(255,215,0,0.15),
+        inset 0 0 40px rgba(255,215,0,0.03);
+    }
+    .pricing-box .compare {
+      font-size: 1.1em;
+      color: #aaa;
+      margin-bottom: 10px;
+    }
+    .pricing-box .old-price {
+      font-size: 1.8em;
+      text-decoration: line-through;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    .pricing-box .current-price {
+      font-size: clamp(3rem, 8vw, 4.5rem);
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 30px rgba(255,215,0,0.5);
+    }
+    .pricing-box .price-period {
+      font-size: 1em;
+      color: #ccc;
+      margin-bottom: 15px;
+    }
+    .pricing-box .price-note {
+      font-size: 0.9em;
+      color: #ff8c00;
+      font-weight: 700;
+    }
+    .pricing-features {
+      text-align: left;
+      max-width: 450px;
+      margin: 20px auto 0;
+      list-style: none;
+    }
+    .pricing-features li {
+      padding: 8px 0;
+      font-size: 1.05em;
+      border-bottom: 1px solid rgba(255,215,0,0.1);
+    }
+    .pricing-features li::before {
+      content: '✓ ';
+      color: #ffd700;
+      font-weight: 900;
+    }
+
+    /* ========== GUARANTEE ========== */
+    .guarantee-section {
+      background: linear-gradient(180deg, #0a0a0a, #0a0a0a);
+      text-align: center;
+    }
+    .guarantee-box {
+      background: linear-gradient(135deg, #001a00, #0a0a0a);
+      border: 2px solid #00cc00;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 0 30px rgba(0,204,0,0.1);
+    }
+    .guarantee-box .g-icon {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+    .guarantee-box h3 {
+      font-size: 1.4em;
+      color: #00cc00;
+      margin-bottom: 10px;
+    }
+    .guarantee-box p {
+      color: #ccc;
+      font-size: 1em;
+    }
+
+    /* ========== FAQ ========== */
+    .faq-section {
+      background: #0a0a0a;
+    }
+    .faq-item {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .faq-q {
+      padding: 18px 24px;
+      font-weight: 700;
+      font-size: 1.05em;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .faq-q::before {
+      content: 'Q.';
+      color: #ffd700;
+      font-weight: 900;
+      margin-right: 10px;
+    }
+    .faq-q .toggle {
+      color: #ffd700;
+      font-size: 1.3em;
+      transition: transform 0.3s;
+    }
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+      padding: 0 24px;
+      color: #ccc;
+      line-height: 1.8;
+    }
+    .faq-item.open .faq-a {
+      max-height: 300px;
+      padding: 0 24px 18px;
+    }
+    .faq-item.open .toggle {
+      transform: rotate(45deg);
+    }
+
+    /* ========== FINAL CTA ========== */
+    .final-cta {
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(255,0,0,0.1) 0%, transparent 50%),
+        linear-gradient(180deg, #0a0a0a, #1a0000, #0a0a0a);
+      text-align: center;
+      padding: 80px 20px;
+      border-top: 4px solid #ffd700;
+    }
+    .final-cta h2 {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+    .final-cta .urgency {
+      color: #ff3333;
+      font-size: 1.2em;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+    .countdown .cd-box {
+      background: linear-gradient(135deg, #1a0000, #2a0000);
+      border: 2px solid #ff3333;
+      border-radius: 10px;
+      padding: 12px 18px;
+      min-width: 70px;
+      text-align: center;
+    }
+    .countdown .cd-num {
+      font-size: 2em;
+      font-weight: 900;
+      color: #ff3333;
+      text-shadow: 0 0 15px rgba(255,0,0,0.5);
+    }
+    .countdown .cd-label {
+      font-size: 0.75em;
+      color: #999;
+    }
+
+    /* ========== FLOATING PARTICLES ========== */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #ffd700;
+      border-radius: 50%;
+      opacity: 0;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0% { opacity: 0; transform: translateY(100vh) scale(0); }
+      20% { opacity: 0.6; }
+      100% { opacity: 0; transform: translateY(-10vh) scale(1); }
+    }
+
+    /* ========== LIMITED BADGE ========== */
+    .limited-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff0000, #ff4400);
+      color: #fff;
+      font-weight: 900;
+      padding: 4px 16px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      letter-spacing: 0.1em;
+      animation: badgePulse 1.5s ease-in-out infinite;
+      margin-bottom: 8px;
+    }
+    @keyframes badgePulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(255,0,0,0.5); }
+      50% { box-shadow: 0 0 25px rgba(255,0,0,0.8); }
+    }
+
+    /* ========== FOOTER ========== */
+    footer {
+      background: #050505;
+      text-align: center;
+      padding: 30px 20px;
+      color: #555;
+      font-size: 0.85em;
+      border-top: 1px solid #222;
+    }
+    footer a {
+      color: #888;
+      text-decoration: none;
+    }
+    footer a:hover {
+      color: #ffd700;
+    }
+
+    /* ========== SCROLL FADE-IN ========== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 600px) {
+      .hero { padding: 40px 16px 60px; }
+      .hero-price-box { padding: 20px 24px; }
+      .cta-btn { padding: 16px 32px; }
+      section { padding: 40px 16px; }
+      .pricing-box { padding: 30px 20px; }
+      .countdown .cd-box { padding: 8px 12px; min-width: 55px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Floating particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Top Ribbon -->
+<div class="top-ribbon">
+  ＼ 今だけ限定キャンペーン実施中！／　毎月の収支が劇的に変わる。
+</div>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="hero-badge">期待値で勝つ新常識</div>
+
+  <h1>
+    もう「なんとなく打ち」で<br>
+    <span class="red glow-red">負け続ける日々</span>は終わりにしませんか？<br>
+    <span class="line-gold">スロット期待値ツール使い放題</span>
+  </h1>
+
+  <p class="hero-sub">
+    6.5号機以降<span class="marker-yellow">ほぼ全機種対応</span>｜ハイエナも設定狙いもこれ一つ
+  </p>
+
+  <div class="hero-price-box">
+    <div class="label">全ツール使い放題</div>
+    <div class="price">月額 1,980<span style="font-size:0.5em">円（税込）</span></div>
+    <div class="price-note">※ 1日あたりたったの約66円</div>
+  </div>
+
+  <br><br>
+
+  <a href="https://slolaboratory.com/membership-login/" class="cta-btn">
+    今すぐ無料で始める
+    <span class="cta-sub">＼ 30秒でカンタン登録 ／</span>
+  </a>
+</section>
+
+<div class="separator"></div>
+
+<!-- ==================== PAIN ==================== -->
+<section class="pain-section fade-in">
+  <h2 class="section-title"><span class="red">こんな悩み</span>ありませんか？</h2>
+  <ul class="pain-list">
+    <li>期待値がある台なのか分からず、結局カンで打ってしまう</li>
+    <li>ハイエナの狙い目ゲーム数を毎回ネットで調べるのが面倒</li>
+    <li>設定判別の精度が低く、高設定を見逃してしまう</li>
+    <li>新台が出るたびに情報収集に時間がかかりすぎる</li>
+    <li>月のトータル収支がいつもマイナスで終わる</li>
+    <li>無料サイトの情報がバラバラで何を信じればいいか分からない</li>
+  </ul>
+</section>
+
+<!-- Arrow -->
+<div class="arrow-section">
+  <div class="arrow">▼</div>
+  <p>その悩み、<span class="marker-yellow">すべて解決</span>できます</p>
+</div>
+
+<!-- ==================== FEATURES ==================== -->
+<section class="features-section fade-in">
+  <h2 class="section-title"><span class="gold glow-gold">すろらぼ</span>が選ばれる理由</h2>
+  <div class="feature-cards">
+    <div class="feature-card">
+      <div class="icon">⚡</div>
+      <h3>圧倒的な更新速度</h3>
+      <p>新台情報を<span class="marker-yellow">業界最速レベル</span>で更新。導入初日から狙い目が分かります。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🎯</div>
+      <h3>ほぼ全機種網羅</h3>
+      <p>6.5号機以降の<span class="marker-yellow">ほぼ全機種</span>に対応。もう複数サイトをハシゴする必要はありません。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📊</div>
+      <h3>期待値見える化</h3>
+      <p>ゲーム数別の期待値を<span class="marker-yellow">グラフ＆表</span>で直感的に把握。打つべきか一目瞭然。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🔧</div>
+      <h3>設定判別ツール</h3>
+      <p>実戦中にサクッと入力するだけで<span class="marker-yellow">設定推測</span>が可能。やめ時判断にも。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">📱</div>
+      <h3>スマホ完全対応</h3>
+      <p>ホール内でも片手でサッと確認。<span class="marker-yellow">見やすいUI</span>で実戦中もストレスゼロ。</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">🧪</div>
+      <h3>大量実戦データ</h3>
+      <p>独自に集計した<span class="marker-yellow">大量の実戦データ</span>に基づく分析。机上の空論ではありません。</p>
+    </div>
+  </div>
+</section>
+
+<div class="separator"></div>
+
+<!-- ==================== NUMBERS ==================== -->
+<section class="numbers-section fade-in">
+  <h2 class="section-title">すろらぼの<span class="gold">実績</span></h2>
+  <div class="numbers-grid">
+    <div class="number-item">
+      <div class="num" data-target="17000">17,000+</div>
+      <div class="num-label">Xフォロワー数</div>
+    </div>
+    <div class="number-item">
+      <div class="num">ほぼ全機種</div>
+      <div class="num-label">6.5号機以降 対応</div>
+    </div>
+    <div class="number-item">
+      <div class="num">2019〜</div>
+      <div class="num-label">運営実績</div>
+    </div>
+  </div>
+</section>
+
+<div class="separator"></div>
+
+<!-- ==================== TESTIMONIALS ==================== -->
+<section class="testimonials-section fade-in">
+  <h2 class="section-title">利用者の<span class="gold">声</span></h2>
+
+  <div class="testimonial">
+    <div class="t-header">
+      <div class="avatar">A</div>
+      <div>
+        <div class="t-name">Aさん（20代・会社員）</div>
+        <div class="stars">★★★★★</div>
+      </div>
+    </div>
+    <div class="t-body">
+      今まで無料サイトで情報集めてたけど、すろらぼ使い始めてから<span class="marker-yellow">情報の質と速さが段違い</span>だと実感。狙い目が一目で分かるから、ホールでの立ち回りが格段にスムーズになった。
+    </div>
+    <div class="t-result">→ 月の収支がプラス域で安定するように！</div>
+  </div>
+
+  <div class="testimonial">
+    <div class="t-header">
+      <div class="avatar">B</div>
+      <div>
+        <div class="t-name">Bさん（30代・フリーランス）</div>
+        <div class="stars">★★★★★</div>
+      </div>
+    </div>
+    <div class="t-body">
+      設定狙いメインでやってるけど、設定判別ツールが神。打ちながらサッと入力するだけで推測結果が出るから、<span class="marker-yellow">やめ時の判断が明確</span>になった。
+    </div>
+    <div class="t-result">→ 高設定の掴みが上手くなって勝率が向上！</div>
+  </div>
+
+  <div class="testimonial">
+    <div class="t-header">
+      <div class="avatar">C</div>
+      <div>
+        <div class="t-name">Cさん（40代・自営業）</div>
+        <div class="stars">★★★★☆</div>
+      </div>
+    </div>
+    <div class="t-body">
+      月額1,980円は最初「高いかな？」と思ったけど、1日66円で全機種の期待値が見放題と考えたら<span class="marker-yellow">コスパ最強</span>。情報収集の時間も大幅に節約できてる。
+    </div>
+    <div class="t-result">→ 空き時間を効率的に使えるようになった！</div>
+  </div>
+</section>
+
+<div class="separator"></div>
+
+<!-- ==================== PRICING ==================== -->
+<section class="pricing-section fade-in">
+  <h2 class="section-title">
+    <span class="limited-badge">期間限定</span><br>
+    <span class="gold glow-gold">料金プラン</span>
+  </h2>
+
+  <div class="pricing-box">
+    <div class="compare">一般的なスロット攻略情報</div>
+    <div class="old-price">月額 3,000〜5,000円</div>
+    <div style="font-size:1.3em; color:#ff3333; font-weight:900; margin: 10px 0;">▼ すろらぼなら ▼</div>
+    <div class="current-price">1,980<span style="font-size:0.4em">円/月（税込）</span></div>
+    <div class="price-period">全ツール・全機種・使い放題</div>
+    <div class="price-note">※ キャンペーン価格は予告なく変更する場合があります</div>
+
+    <ul class="pricing-features">
+      <li>6.5号機以降 ほぼ全機種対応</li>
+      <li>ハイエナ狙い目ツール使い放題</li>
+      <li>設定判別ツール使い放題</li>
+      <li>大量実戦データ＆考察コラム閲覧</li>
+      <li>新台情報を最速更新</li>
+      <li>スマホ対応で実戦中も快適</li>
+    </ul>
+  </div>
+
+  <a href="https://slolaboratory.com/membership-login/" class="cta-btn">
+    今すぐ登録する
+    <span class="cta-sub">＼ 1日たったの約66円 ／</span>
+  </a>
+</section>
+
+<div class="separator"></div>
+
+<!-- ==================== GUARANTEE ==================== -->
+<section class="guarantee-section fade-in">
+  <div class="guarantee-box">
+    <div class="g-icon">🛡️</div>
+    <h3>安心の月額制 ─ いつでも解約OK</h3>
+    <p>
+      すろらぼは月額制のサブスクリプション。<br>
+      合わないと思ったら<strong style="color:#00cc00">いつでも解約可能</strong>です。<br>
+      長期契約の縛りは一切ありません。
+    </p>
+  </div>
+</section>
+
+<div class="separator"></div>
+
+<!-- ==================== FAQ ==================== -->
+<section class="faq-section fade-in">
+  <h2 class="section-title">よくある<span class="gold">質問</span></h2>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <span>スロット初心者でも使えますか？</span>
+      <span class="toggle">＋</span>
+    </div>
+    <div class="faq-a">
+      はい、初心者の方でも直感的に使えるよう設計されています。狙い目のゲーム数がひと目で分かるので、難しい知識は不要です。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <span>対応している機種はどれくらいありますか？</span>
+      <span class="toggle">＋</span>
+    </div>
+    <div class="faq-a">
+      6.5号機以降のほぼ全機種に対応しています。新台もいち早く追加されますので、ホールで打てる主要機種はほぼカバーしています。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <span>スマホでも使えますか？</span>
+      <span class="toggle">＋</span>
+    </div>
+    <div class="faq-a">
+      もちろんです。スマホ完全対応なので、ホール内で片手で確認できます。実戦中のチェックもストレスなく行えます。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <span>解約はいつでもできますか？</span>
+      <span class="toggle">＋</span>
+    </div>
+    <div class="faq-a">
+      はい、いつでも解約可能です。長期契約の縛りは一切ありません。マイページからワンクリックで手続きできます。
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <span>複数端末で使えますか？</span>
+      <span class="toggle">＋</span>
+    </div>
+    <div class="faq-a">
+      1アカウントにつき同時ログインは1ブラウザまでとなっています。端末の切り替え自体は可能ですが、同時利用はできません。
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FINAL CTA ==================== -->
+<div class="final-cta">
+  <div class="limited-badge blink">期間限定キャンペーン中</div>
+  <h2>
+    <span class="gold glow-gold">スロットで勝つ</span>ための<br>
+    最短ルートがここにある
+  </h2>
+  <p class="urgency">※ キャンペーン価格は予告なく終了する場合があります</p>
+
+  <div class="countdown" id="countdown">
+    <div class="cd-box">
+      <div class="cd-num" id="cd-hours">00</div>
+      <div class="cd-label">時間</div>
+    </div>
+    <div class="cd-box">
+      <div class="cd-num" id="cd-minutes">00</div>
+      <div class="cd-label">分</div>
+    </div>
+    <div class="cd-box">
+      <div class="cd-num" id="cd-seconds">00</div>
+      <div class="cd-label">秒</div>
+    </div>
+  </div>
+
+  <a href="https://slolaboratory.com/membership-login/" class="cta-btn" style="font-size: clamp(1.4rem, 3.5vw, 1.8rem);">
+    今すぐ すろらぼ を始める
+    <span class="cta-sub">＼ 登録は30秒・いつでも解約OK ／</span>
+  </a>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <p>© すろらぼ｜株式会社フリーティア</p>
+  <p style="margin-top:8px;">
+    <a href="https://slolaboratory.com/%E5%88%A9%E7%94%A8%E8%A6%8F%E7%B4%84/">利用規約</a>　|
+    <a href="https://slolaboratory.com/%E3%82%88%E3%81%8F%E3%81%82%E3%82%8B%E8%B3%AA%E5%95%8F/">よくある質問</a>
+  </p>
+</footer>
+
+<!-- ==================== SCRIPTS ==================== -->
+<script>
+  // Floating particles
+  (function() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = Math.random() * 6 + 's';
+      p.style.animationDuration = (4 + Math.random() * 4) + 's';
+      p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+      container.appendChild(p);
+    }
+  })();
+
+  // Countdown timer (resets daily for urgency)
+  (function() {
+    function update() {
+      const now = new Date();
+      const end = new Date(now);
+      end.setHours(23, 59, 59, 999);
+      const diff = end - now;
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cd-hours').textContent = String(h).padStart(2, '0');
+      document.getElementById('cd-minutes').textContent = String(m).padStart(2, '0');
+      document.getElementById('cd-seconds').textContent = String(s).padStart(2, '0');
+    }
+    update();
+    setInterval(update, 1000);
+  })();
+
+  // Scroll fade-in
+  (function() {
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  })();
+</script>
+
+</body>
+</html>
