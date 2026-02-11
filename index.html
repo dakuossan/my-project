@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bee05 - 自己紹介</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
+      background: #08081a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient background glow */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #f7c948 0%, transparent 70%);
+      top: -10%;
+      right: -5%;
+      animation: ambientDrift1 12s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #6c5ce7 0%, transparent 70%);
+      bottom: -10%;
+      left: -5%;
+      animation: ambientDrift2 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes ambientDrift1 {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-60px, 40px); }
+    }
+
+    @keyframes ambientDrift2 {
+      from { transform: translate(0, 0); }
+      to { transform: translate(50px, -30px); }
+    }
+
+    /* Subtle dot grid overlay */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(20, 20, 45, 0.6);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      padding: 48px 40px;
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+      animation: cardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Avatar */
+    .avatar-wrapper {
+      position: relative;
+      width: 104px;
+      height: 104px;
+      margin: 0 auto 28px;
+    }
+
+    .avatar-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #f7c948, #ee5a24, #f7c948);
+      animation: ringRotate 6s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes ringRotate {
+      to { transform: rotate(360deg); }
+    }
+
+    .avatar-ring::after {
+      content: "";
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background: #14142d;
+    }
+
+    .avatar {
+      position: relative;
+      z-index: 1;
+      width: 104px;
+      height: 104px;
+      background: linear-gradient(135deg, #f7c948, #ee5a24);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 42px;
+      font-weight: 700;
+      color: #14142d;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(247, 201, 72, 0.3); }
+      50% { box-shadow: 0 0 32px 12px rgba(247, 201, 72, 0.1); }
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+      color: #f5f5f5;
+      animation: fadeUp 0.6s ease-out 0.15s both;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.35);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+      animation: fadeUp 0.6s ease-out 0.25s both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Sections */
+    .section {
+      text-align: left;
+      margin-bottom: 24px;
+      animation: fadeUp 0.6s ease-out both;
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section:nth-child(4) { animation-delay: 0.35s; }
+    .section:nth-child(5) { animation-delay: 0.45s; }
+    .section:nth-child(6) { animation-delay: 0.55s; }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #f7c948;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(247, 201, 72, 0.2), transparent);
+    }
+
+    /* Hobby */
+    .hobby {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .hobby:hover {
+      border-color: rgba(247, 201, 72, 0.3);
+      background: rgba(247, 201, 72, 0.05);
+      transform: translateX(4px);
+    }
+
+    .hobby-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    /* Skill bars */
+    .skill-bar {
+      margin-bottom: 16px;
+    }
+
+    .skill-bar:last-child {
+      margin-bottom: 0;
+    }
+
+    .skill-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .skill-bar-label {
+      color: #d0d0d0;
+      font-weight: 500;
+    }
+
+    .skill-bar-level {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .skill-bar-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      width: 0;
+      animation: fillBar 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      position: relative;
+    }
+
+    .skill-bar-fill::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 24px;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3));
+      border-radius: 0 100px 100px 0;
+    }
+
+    .skill-bar:nth-child(1) .skill-bar-fill {
+      animation-delay: 0.6s;
+      background: linear-gradient(90deg, #f7c948, #ee5a24);
+    }
+    .skill-bar:nth-child(2) .skill-bar-fill {
+      animation-delay: 0.75s;
+      background: linear-gradient(90deg, #48d4c9, #2a9df4);
+    }
+    .skill-bar:nth-child(3) .skill-bar-fill {
+      animation-delay: 0.9s;
+      background: linear-gradient(90deg, #a855f7, #ec4899);
+    }
+
+    @keyframes fillBar {
+      to { width: var(--level); }
+    }
+
+    /* Skill tags */
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-tag {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #c0c0c0;
+      transition: all 0.25s ease;
+      opacity: 0;
+      animation: popIn 0.4s ease-out forwards;
+      cursor: default;
+    }
+
+    .skill-tag:nth-child(1) { animation-delay: 0.55s; }
+    .skill-tag:nth-child(2) { animation-delay: 0.63s; }
+    .skill-tag:nth-child(3) { animation-delay: 0.71s; }
+    .skill-tag:nth-child(4) { animation-delay: 0.79s; }
+    .skill-tag:nth-child(5) { animation-delay: 0.87s; }
+    .skill-tag:nth-child(6) { animation-delay: 0.95s; }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.7) translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .skill-tag:hover {
+      border-color: rgba(247, 201, 72, 0.35);
+      background: rgba(247, 201, 72, 0.08);
+      color: #f0e6c0;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(247, 201, 72, 0.08);
+    }
+
+    /* Divider */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.06), transparent);
+      margin: 28px 0;
+      animation: fadeUp 0.6s ease-out 0.3s both;
+    }
+
+    /* Footer / Social hint */
+    .card-footer {
+      text-align: center;
+      animation: fadeUp 0.6s ease-out 0.65s both;
+    }
+
+    .card-footer-text {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.2);
+      letter-spacing: 0.05em;
+    }
+
+    /* Responsive */
+    @media (max-width: 520px) {
+      .card {
+        padding: 36px 28px;
+        border-radius: 20px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .avatar-wrapper {
+        width: 88px;
+        height: 88px;
+      }
+
+      .avatar {
+        width: 88px;
+        height: 88px;
+        font-size: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+
+  <div class="card">
+    <div class="avatar-wrapper">
+      <div class="avatar-ring"></div>
+      <div class="avatar">b</div>
+    </div>
+
+    <h1>bee05</h1>
+    <p class="subtitle">Self Introduction</p>
+
+    <div class="section">
+      <p class="section-title">Hobby</p>
+      <div class="hobby">
+        <span class="hobby-icon">&#129302;</span>
+        <span>AIツールを試すこと</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <p class="section-title">Skills</p>
+      <div class="skill-bar">
+        <div class="skill-bar-header">
+          <span class="skill-bar-label">AI / Prompt Engineering</span>
+          <span class="skill-bar-level">Advanced</span>
+        </div>
+        <div class="skill-bar-track">
+          <div class="skill-bar-fill" style="--level: 85%"></div>
+        </div>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-header">
+          <span class="skill-bar-label">Web Development</span>
+          <span class="skill-bar-level">Intermediate</span>
+        </div>
+        <div class="skill-bar-track">
+          <div class="skill-bar-fill" style="--level: 65%"></div>
+        </div>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-header">
+          <span class="skill-bar-label">Automation</span>
+          <span class="skill-bar-level">Intermediate</span>
+        </div>
+        <div class="skill-bar-track">
+          <div class="skill-bar-fill" style="--level: 60%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <p class="section-title">Tech Stack</p>
+      <div class="skills-list">
+        <span class="skill-tag">Claude</span>
+        <span class="skill-tag">ChatGPT</span>
+        <span class="skill-tag">HTML / CSS</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Git</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="card-footer">
+      <p class="card-footer-text">Built with curiosity & AI</p>
+    </div>
+  </div>
+</body>
+</html>
